@@ -7,7 +7,7 @@
 tokens = (
     'NAME','NUMBER',
     'PLUS','MINUS','TIMES','DIVIDE','EQUALS',
-    'LPAREN','RPAREN',
+    'LPAREN','RPAREN', 'MODULO',
     )
 
 # Tokens
@@ -20,14 +20,18 @@ t_EQUALS  = r'='
 t_LPAREN  = r'\('
 t_RPAREN  = r'\)'
 t_NAME    = r'[a-zA-Z_][a-zA-Z0-9_]*'
+t_MODULO = r'%'
 
 def t_NUMBER(t):
-    r'\d+'
+    r'[0-9]+[.]?[0-9]*'
     try:
         t.value = int(t.value)
     except ValueError:
-        print("Integer value too large %d", t.value)
-        t.value = 0
+        try:
+            t.value = float(t.value)
+        except ValueError:
+            print("Integer value too large %d", t.value)
+            t.value = 0
     return t
 
 # Ignored characters
@@ -49,11 +53,11 @@ lexer = lex.lex()
 
 precedence = (
     ('left','PLUS','MINUS'),
-    ('left','TIMES','DIVIDE'),
+    ('left','TIMES','DIVIDE', 'MODULO'),
     ('right','UMINUS'),
     )
 
-# dictionary of names
+# dictionary of names - variable storage
 names = { }
 
 def p_statement_assign(t):
@@ -68,11 +72,13 @@ def p_expression_binop(t):
     '''expression : expression PLUS expression
                   | expression MINUS expression
                   | expression TIMES expression
-                  | expression DIVIDE expression'''
+                  | expression DIVIDE expression
+                  | expression MODULO expression'''
     if t[2] == '+'  : t[0] = t[1] + t[3]
     elif t[2] == '-': t[0] = t[1] - t[3]
     elif t[2] == '*': t[0] = t[1] * t[3]
     elif t[2] == '/': t[0] = t[1] / t[3]
+    elif t[2] == '%': t[0] = t[1] % t[3]
 
 def p_expression_uminus(t):
     'expression : MINUS expression %prec UMINUS'
@@ -102,7 +108,7 @@ parser = yacc.yacc()
 
 while True:
     try:
-        s = input('calc > ')   # Use raw_input on Python 2
+        s = input()   # Use raw_input on Python 2
     except EOFError:
         break
     parser.parse(s)
