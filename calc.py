@@ -7,7 +7,7 @@
 tokens = (
     'NAME','NUMBER',
     'PLUS','MINUS','TIMES','DIVIDE','EQUALS',
-    'LPAREN','RPAREN', 'MODULO',
+    'LPAREN','RPAREN', 'MODULO', 'FLOOR'
     )
 
 # Tokens
@@ -21,6 +21,8 @@ t_LPAREN  = r'\('
 t_RPAREN  = r'\)'
 t_NAME    = r'[a-zA-Z_][a-zA-Z0-9_]*'
 t_MODULO = r'%'
+t_FLOOR = r'//'
+
 
 def t_NUMBER(t):
     r'[0-9]+[.]?[0-9]*'
@@ -53,7 +55,7 @@ lexer = lex.lex()
 
 precedence = (
     ('left','PLUS','MINUS'),
-    ('left','TIMES','DIVIDE', 'MODULO'),
+    ('left','TIMES','DIVIDE', 'MODULO', 'FLOOR'),
     ('right','UMINUS'),
     )
 
@@ -73,12 +75,14 @@ def p_expression_binop(t):
                   | expression MINUS expression
                   | expression TIMES expression
                   | expression DIVIDE expression
-                  | expression MODULO expression'''
+                  | expression MODULO expression
+                  | expression FLOOR expression'''
     if t[2] == '+'  : t[0] = t[1] + t[3]
     elif t[2] == '-': t[0] = t[1] - t[3]
     elif t[2] == '*': t[0] = t[1] * t[3]
     elif t[2] == '/': t[0] = t[1] / t[3]
     elif t[2] == '%': t[0] = t[1] % t[3]
+    elif t[2] == '//': t[0] = t[1] // t[3]
 
 def p_expression_uminus(t):
     'expression : MINUS expression %prec UMINUS'
