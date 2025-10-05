@@ -77,10 +77,20 @@ def p_expression_binop(t):
                   | expression DIVIDE expression
                   | expression MODULO expression
                   | expression FLOOR expression'''
-    if t[2] == '+'  : t[0] = t[1] + t[3]
-    elif t[2] == '-': t[0] = t[1] - t[3]
-    elif t[2] == '*': t[0] = t[1] * t[3]
-    elif t[2] == '/': t[0] = t[1] / t[3]
+    if t[2] == '+'  : 
+        t[0] = t[1] + t[3]
+    elif t[2] == '-': 
+        t[0] = t[1] - t[3]
+    elif t[2] == '*': 
+        t[0] = t[1] * t[3]
+    elif t[2] == '/': 
+        t[0] = t[1] / t[3]
+        if t[0].is_integer():
+            t[0] = int(t[0])
+
+            
+            
+        
     elif t[2] == '%': t[0] = t[1] % t[3]
     elif t[2] == '//': t[0] = t[1] // t[3]
 
