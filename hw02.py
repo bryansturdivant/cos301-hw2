@@ -3,6 +3,7 @@
 #
 # A simple calculator with variables -- all in one file.
 # -----------------------------------------------------------------------------
+import sys
 
 tokens = (
     'NAME','NUMBER',
@@ -32,7 +33,7 @@ def t_NUMBER(t):
         try:
             t.value = float(t.value)
         except ValueError:
-            print("Integer value too large %d", t.value)
+            print("Integer value too large %d", t.value, file=sys.stderr)
             t.value = 0
     return t
 
@@ -44,7 +45,7 @@ def t_newline(t):
     t.lexer.lineno += t.value.count("\n")
     
 def t_error(t):
-    print("Illegal character '%s'" % t.value[0])
+    print("Illegal character '%s'" % t.value[0], file=sys.stderr)
     t.lexer.skip(1)
     
 # Build the lexer
@@ -111,11 +112,12 @@ def p_expression_name(t):
     try:
         t[0] = names[t[1]]
     except LookupError:
-        print("Undefined name '%s'" % t[1])
+        print("Undefined name '%s'" % t[1], file=sys.stderr)
         t[0] = 0
 
 def p_error(t):
-    print("Syntax error at '%s'" % t.value)
+    print("Syntax error at '%s'" % t.value, file=sys.stderr)
+    
 
 import ply.yacc as yacc
 parser = yacc.yacc()
